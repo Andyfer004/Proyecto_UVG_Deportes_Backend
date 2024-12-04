@@ -1,0 +1,24 @@
+{
+  "name": "proyecto_uvg_deportes_backend",
+  "version": "1.0.0",
+  "description": "Project deportes backend",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Andyfer004/Proyecto_UVG_Deportes_Backend.git"
+  },
+  "author": "Andy Fuentes and Christian Echeverria",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Andyfer004/Proyecto_UVG_Deportes_Backend/issues"
+  },
+  "homepage": "https://github.com/Andyfer004/Proyecto_UVG_Deportes_Backend#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.1",
+    "mysql2": "^3.11.5"
+  }
+}
