@@ -1,9 +1,14 @@
+-- Crear usuario y otorgar privilegios
+CREATE USER IF NOT EXISTS 'Admin'@'%' IDENTIFIED BY 'Admin';
+GRANT ALL PRIVILEGES ON deportes.* TO 'Admin'@'%' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+
 -- Crear Base de Datos
 CREATE DATABASE IF NOT EXISTS deportes;
 USE deportes;
 
 -- Tabla: Torneos
-CREATE TABLE Torneos (
+CREATE TABLE IF NOT EXISTS Torneos (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     Nombre VARCHAR(255) NOT NULL,
     Deporte VARCHAR(255) NOT NULL,
@@ -12,7 +17,7 @@ CREATE TABLE Torneos (
 );
 
 -- Tabla: Equipos
-CREATE TABLE Equipos (
+CREATE TABLE IF NOT EXISTS Equipos (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     Nombre VARCHAR(255) NOT NULL,
     Torneo_id BIGINT UNSIGNED NOT NULL,
@@ -27,17 +32,17 @@ CREATE TABLE Equipos (
 );
 
 -- Tabla: Jugadores
-CREATE TABLE Jugadores (
+CREATE TABLE IF NOT EXISTS Jugadores (
     carnet BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(255) NOT NULL,
     equipo_id BIGINT UNSIGNED NOT NULL,
-    número INT NOT NULL,
+    numero INT NOT NULL,
     anotaciones INT DEFAULT 0,
     FOREIGN KEY (equipo_id) REFERENCES Equipos(id)
 );
 
 -- Tabla: HistorialMejoresEquipos
-CREATE TABLE HistorialMejoresEquipos (
+CREATE TABLE IF NOT EXISTS HistorialMejoresEquipos (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     equipo_id BIGINT UNSIGNED NOT NULL,
     semana DATE NOT NULL,
@@ -45,7 +50,7 @@ CREATE TABLE HistorialMejoresEquipos (
 );
 
 -- Tabla: Partidos
-CREATE TABLE Partidos (
+CREATE TABLE IF NOT EXISTS Partidos (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     torneo_id BIGINT UNSIGNED NOT NULL,
     Local BIGINT UNSIGNED NOT NULL,
@@ -61,7 +66,7 @@ CREATE TABLE Partidos (
 );
 
 -- Tabla: Relación Torneos-Equipos
-CREATE TABLE torneo_has_equipos (
+CREATE TABLE IF NOT EXISTS torneo_has_equipos (
     torneo_id BIGINT UNSIGNED NOT NULL,
     equipo_id BIGINT UNSIGNED NOT NULL,
     PRIMARY KEY (torneo_id, equipo_id),

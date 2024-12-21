@@ -2,7 +2,7 @@
 FROM mysql:latest
 
 # Variables de entorno para configurar la base de datos
-ENV MYSQL_DATABASE=sports
+ENV MYSQL_DATABASE=deportes
 ENV MYSQL_ROOT_PASSWORD=Admin
 ENV MYSQL_USER=Admin
 ENV MYSQL_PASSWORD=Admin
