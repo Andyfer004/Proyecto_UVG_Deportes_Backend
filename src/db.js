@@ -115,23 +115,13 @@ export async function insertJugador(nombre, equipoId, numero) {
 
 // Insertar un nuevo partido
 export async function insertPartido(
-  torneoId,
-  local,
-  visitante,
-  ubicacion,
-  fecha,
-  estado
+  torneoId, local, visitante, ubicacion, fechaHora, estado
 ) {
-  try {
-    const [result] = await conn.query(
-      'INSERT INTO Partidos (torneo_id, Local, Visitante, ubicacion, Fecha, Estado) VALUES (?, ?, ?, ?, ?, ?)',
-      [torneoId, local, visitante, ubicacion, fecha, estado]
-    );
-    return result.insertId;
-  } catch (error) {
-    console.error('Error al insertar partido:', error);
-    throw error;
-  }
+  const [result] = await conn.query(
+    'INSERT INTO Partidos (torneo_id, Local, Visitante, ubicacion, Fecha, Estado) VALUES (?, ?, ?, ?, ?, ?)',
+    [torneoId, local, visitante, ubicacion, fechaHora, estado]
+  );
+  return result.insertId;
 }
 
 // Actualizar puntuaciones de un equipo
@@ -156,6 +146,30 @@ export async function updateEquipoGrupo(equipoId, grupo) {
     ]);
   } catch (error) {
     console.error(`Error al actualizar el grupo del equipo ${equipoId}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Actualiza el marcador (golesLocal, golesVisitante) y el estado de un partido.
+ * @param {number} id               - ID del partido a actualizar.
+ * @param {number} golesLocal       - Goles anotados por el equipo local.
+ * @param {number} golesVisitante   - Goles anotados por el equipo visitante.
+ * @param {string} estado           - Nuevo estado del partido (p.ej. "finalizado", "programado").
+ */
+export async function updatePartidoMarcadorEstado(id, golesLocal, golesVisitante, estado) {
+  try {
+    const [result] = await conn.query(
+      `UPDATE Partidos
+         SET Anotaciones_local    = ?,
+             Anotaciones_visitante = ?,
+             Estado                = ?
+       WHERE id = ?`,
+      [golesLocal, golesVisitante, estado, id]
+    );
+    return result;
+  } catch (error) {
+    console.error(`Error al actualizar partido ${id}:`, error);
     throw error;
   }
 }

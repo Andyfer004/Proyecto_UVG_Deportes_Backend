@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { getAllEquipos, getAllJugadores, getAllPartidos, getAllTorneos, insertTorneo, insertEquipo, insertJugador, insertPartido, updateEquipoPuntos } from './db.js';
+import { getAllEquipos, getAllJugadores, getAllPartidos, getAllTorneos, insertTorneo, insertEquipo, insertJugador, insertPartido, updateEquipoPuntos, updatePartidoMarcadorEstado} from './db.js';
 
 const app = express();
 
@@ -54,23 +54,44 @@ app.get('/partidos', async (req, res) => {
 app.post('/torneos', async (req, res) => {
   const { nombre, deporte, fechaInicio, fechaFin } = req.body;
   try {
-    const torneoId = await insertTorneo(nombre, deporte, fechaInicio, fechaFin);
-    res.json({ id: torneoId });
+    const torneoId = await insertTorneo(
+      nombre,
+      deporte,
+      fechaInicio,
+      fechaFin
+    );
+    return res.json({ id: torneoId });
   } catch (error) {
-    res.status(500).json({ error: 'Error al insertar torneo' });
+    // 1) Imprime TODO el objeto error en consola
+    console.error('Error al insertar torneo (raw):', error);
+    if (error instanceof Error) {
+      console.error(error.stack);      // la traza completa
+    } else {
+      console.error('No es instancia de Error, JSON:', JSON.stringify(error));
+    }
+
+    // 2) Devuélvelo en la respuesta para que lo veas en Postman
+    return res.status(500).json({
+      error: 'Error al insertar torneo',
+      // intenta extraer toda la info posible:
+      detail: error instanceof Error
+        ? error.toString()
+        : JSON.stringify(error)
+    });
   }
 });
 
 // Insertar un nuevo equipo
 app.post('/equipos', async (req, res) => {
-  const { nombre, torneoId } = req.body;
+  const { nombre, torneoId, grupo } = req.body;               // <— incluye grupo
   try {
-    const equipoId = await insertEquipo(nombre, torneoId);
+    const equipoId = await insertEquipo(nombre, torneoId, grupo);
     res.json({ id: equipoId });
   } catch (error) {
     res.status(500).json({ error: 'Error al insertar equipo' });
   }
 });
+
 
 // Insertar un nuevo jugador
 app.post('/jugadores', async (req, res) => {
@@ -106,6 +127,27 @@ app.put('/equipos/:id/puntos', async (req, res) => {
   }
 });
 
+
+app.put('/partidos/:id', async (req, res) => {
+  const { id } = req.params;
+  const { golesLocal, golesVisitante, estado } = req.body;
+  try {
+    await updatePartidoMarcadorEstado(
+      Number(id),
+      Number(golesLocal),
+      Number(golesVisitante),
+      estado
+    );
+    res.json({ message: 'Partido actualizado correctamente' });
+  } catch (error) {
+    console.error('Error al actualizar partido:', error);
+    res.status(500).json({
+      error: 'Error al actualizar partido',
+      detail: error.message
+    });
+  }
+});
+
 app.get('/', (req, res) => {
     res.send('API de torneos');
 });
@@ -115,3 +157,5 @@ const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
+
