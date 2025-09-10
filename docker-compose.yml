@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # Base de datos MySQL
+  db:
+    build: .
+    container_name: deportes-db
+    environment:
+      MYSQL_DATABASE: deportes
+      MYSQL_ROOT_PASSWORD: Admin
+      MYSQL_USER: Admin
+      MYSQL_PASSWORD: Admin
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - deportes-network
+    restart: unless-stopped
+
+  # Backend Node.js
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: deportes-backend
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: db
+      DB_USER: Admin
+      DB_PASSWORD: Admin
+      DB_NAME: deportes
+      PORT: 3000
+      NODE_ENV: development
+    depends_on:
+      - db
+    networks:
+      - deportes-network
+    restart: unless-stopped
+    volumes:
+      - ./src:/app/src
+      - ./package.json:/app/package.json
+      - ./package-lock.json:/app/package-lock.json
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  deportes-network:
+    driver: bridge 
